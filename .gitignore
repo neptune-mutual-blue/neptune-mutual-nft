@@ -12,3 +12,13 @@ docs/
 
 # Dotenv file
 .env
+lib
+node_modules
+lcov.info
+coverage
+build
+truffle*
+solidoc*
+yarn*
+package*
+.*
