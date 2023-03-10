@@ -16,7 +16,8 @@ import "./Soulbound.sol";
  *
  */
 contract NeptuneMutualNft is Soulbound {
-  mapping(uint256 => bool) public _minted;
+  mapping(uint256 => bool) public minted;
+  mapping(address => uint8) public personas;
 
   /**
    *
@@ -32,7 +33,28 @@ contract NeptuneMutualNft is Soulbound {
 
   /**
    *
+   * @dev Enables you to set persona once
+   * @custom:suppress-acl This function is publicly accessilbe.
+   *
+   * @param persona Specify what your persona is.
+   *
+   * 1 - Guardian
+   * 2 - Beast
+   *
+   */
+  function setPersona(uint8 persona) external nonReentrant {
+    require(persona >= 1 && persona <= 2, "Error: invalid persona");
+    require(personas[msg.sender] == 0, "Error: already set");
+
+    personas[msg.sender] = persona;
+
+    emit PersonaSet(msg.sender, persona);
+  }
+
+  /**
+   *
    * @dev Mints a new NTF based on the input parameters.
+   * @custom:suppress-acl Ensure that this feature can only be accessed by "Minters".
    *
    * @param account     Provide the account address which will receive this NFT.
    * @param id          Enter the token identifier to mint.
@@ -40,11 +62,12 @@ contract NeptuneMutualNft is Soulbound {
    * @param data        App-specific data, if any.
    *
    */
+
   function mint(address account, uint256 id, bool soulbound, bytes calldata data) external nonReentrant _mustHaveAccess(NS_ROLES_MINTER) {
-    require(_minted[id] == false, "Duplicate id");
+    require(minted[id] == false, "Duplicate id");
 
     _soulbound[id] = soulbound;
-    _minted[id] = true;
+    minted[id] = true;
 
     if (soulbound) {
       emit SoulBound(id);
@@ -56,6 +79,7 @@ contract NeptuneMutualNft is Soulbound {
   /**
    *
    * @dev Mints multiple NTFs based on the input parameters.
+   * @custom:suppress-acl Ensure that this feature can only be accessed by "Minters".
    *
    * @param to          Provide the account address that will receive these NFTs.
    * @param ids         Enter token identifiers to mint.
@@ -67,8 +91,8 @@ contract NeptuneMutualNft is Soulbound {
     for (uint256 i = 0; i < ids.length; i++) {
       require(amounts[i] == 1, "Invalid amount");
 
-      require(_minted[ids[i]] == false, "Duplicate id");
-      _minted[ids[i]] = true;
+      require(minted[ids[i]] == false, "Duplicate id");
+      minted[ids[i]] = true;
     }
 
     super._mintBatch(to, ids, amounts, data);
@@ -77,6 +101,7 @@ contract NeptuneMutualNft is Soulbound {
   /**
    *
    * @dev Mints many NTFs based on the input parameters.
+   * @custom:suppress-acl Ensure that this feature can only be accessed by "Minters".
    *
    * @param accounts    Provide the account address that will receive these NFTs.
    * @param ids         Enter token identifiers to mint.
@@ -92,9 +117,9 @@ contract NeptuneMutualNft is Soulbound {
         emit SoulBound(ids[i]);
       }
 
-      require(_minted[ids[i]] == false, "Duplicate id");
+      require(minted[ids[i]] == false, "Duplicate id");
 
-      _minted[ids[i]] = true;
+      minted[ids[i]] = true;
       super._mint(accounts[i], ids[i], 1, data);
     }
   }
