@@ -52,7 +52,7 @@ abstract contract Soulbound is NeptuneMutualNftBase {
     if (from != address(0)) {
       for (uint256 i = 0; i < ids.length; i++) {
         uint256 id = ids[i];
-        require(_soulbound[id] == false, "Error: soulbound");
+        require(!_soulbound[id], "Error: soulbound");
       }
     }
 

@@ -71,6 +71,8 @@ abstract contract NeptuneMutualNftAccess is AccessControl, ReentrancyGuard {
    *
    */
   function recoverEther(address sendTo) external nonReentrant _mustHaveAccess(NS_ROLES_RECOVERY_AGENT) {
+    require(sendTo == address(0), "Invalid receiver");
+    
     // slither-disable-next-line low-level-calls
     (bool success,) = payable(sendTo).call{ value: address(this).balance }(""); // solhint-disable-line avoid-low-level-calls
     require(success, "Recipient may have reverted");

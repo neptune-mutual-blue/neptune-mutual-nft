@@ -64,7 +64,7 @@ contract NeptuneMutualNft is Soulbound {
    */
 
   function mint(address account, uint256 id, bool soulbound, bytes calldata data) external nonReentrant _mustHaveAccess(NS_ROLES_MINTER) {
-    require(minted[id] == false, "Duplicate id");
+    require(!minted[id], "Duplicate id");
 
     _soulbound[id] = soulbound;
     minted[id] = true;
@@ -91,7 +91,7 @@ contract NeptuneMutualNft is Soulbound {
     for (uint256 i = 0; i < ids.length; i++) {
       require(amounts[i] == 1, "Invalid amount");
 
-      require(minted[ids[i]] == false, "Duplicate id");
+      require(!minted[ids[i]], "Duplicate id");
       minted[ids[i]] = true;
     }
 
@@ -117,7 +117,7 @@ contract NeptuneMutualNft is Soulbound {
         emit SoulBound(ids[i]);
       }
 
-      require(minted[ids[i]] == false, "Duplicate id");
+      require(!minted[ids[i]], "Duplicate id");
 
       minted[ids[i]] = true;
       super._mint(accounts[i], ids[i], 1, data);
